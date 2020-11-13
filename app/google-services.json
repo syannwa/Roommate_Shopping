@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "106089281274",
+    "firebase_url": "https://waters-hutchinson-final.firebaseio.com",
+    "project_id": "waters-hutchinson-final",
+    "storage_bucket": "waters-hutchinson-final.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106089281274:android:6d7ff566104fcdecc57b43",
+        "android_client_info": {
+          "package_name": "edu.uga.cs.roommateshopping"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "106089281274-m1qj3juf6uq455hkuredqr9vgg82rsub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-MkpkD70Mc8_7qWRj9cXQFKM-xpZtpus"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "106089281274-m1qj3juf6uq455hkuredqr9vgg82rsub.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
