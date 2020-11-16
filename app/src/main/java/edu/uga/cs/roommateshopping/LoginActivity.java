@@ -86,8 +86,7 @@ public class LoginActivity extends AppCompatActivity
 
         if(account != null){
             Toast.makeText(this,"Signed in successfully.",Toast.LENGTH_LONG).show();
-            //CHANGE THIS TO WHEREVER THE APP NEEDS TO GO NEXT
-            //startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, MainNavigationActivity.class));
 
         }else {
             Toast.makeText(this,"Error signing in: Could not find this user.",Toast.LENGTH_LONG).show();

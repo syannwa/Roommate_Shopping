@@ -1,5 +1,6 @@
 package edu.uga.cs.roommateshopping;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -72,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //updateUI(user);
+                            updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -84,6 +85,18 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
         // [END create_user_with_email]
+    }
+
+    public void updateUI(FirebaseUser account){
+
+        if(account != null){
+            Toast.makeText(this,"Registered successfully.",Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, MainNavigationActivity.class));
+
+        }else {
+            Toast.makeText(this,"Error signing in: Could not find this user.",Toast.LENGTH_LONG).show();
+        }
+
     }
 
 //    private void sendEmailVerification() {
