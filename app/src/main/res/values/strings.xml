@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Roommate Shopping</string>
+    <string name="shopping">Shopping</string>
+    <string name="roommates">Roommates</string>
+    <string name="descriptiom">A simple app for getting everything you and your roommates can
+    think of.</string>
+    <string name="with">with</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="person_with_cart">Person with cart</string>
 </resources>
