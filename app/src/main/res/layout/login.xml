@@ -159,7 +159,7 @@
         android:layout_marginEnd="153dp"
         android:layout_marginRight="153dp"
         android:layout_marginBottom="85dp"
-        android:text="Login"
+        android:text="@string/login"
         android:textSize="20sp"
         app:backgroundTint="#50B0EF"
         app:layout_constraintBottom_toBottomOf="parent"
