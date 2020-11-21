@@ -115,14 +115,17 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail: success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
+                            // Get database instance
                             database = FirebaseDatabase.getInstance();
                             DatabaseReference myRef = database.getReference("rooms");
 
-                            myRef.push().setValue( curUser )
+                            // Get room if it exists, add new roommate to database
+                            myRef.child( curUser.room ).child( curUser.firstName ).setValue( curUser )
                                     .addOnSuccessListener( new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
