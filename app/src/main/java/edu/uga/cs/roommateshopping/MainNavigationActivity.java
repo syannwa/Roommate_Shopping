@@ -49,7 +49,8 @@ public class MainNavigationActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            //Display Group Shopping List
+            Intent intent = new Intent(v.getContext(), GroupShoppingListActivity.class);
+            v.getContext().startActivity(intent);
         }
     }
 

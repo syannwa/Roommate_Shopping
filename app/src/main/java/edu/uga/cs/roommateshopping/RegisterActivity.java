@@ -125,7 +125,7 @@ public class RegisterActivity extends AppCompatActivity {
                             DatabaseReference myRef = database.getReference("rooms");
 
                             // Get room if it exists, add new roommate to database
-                            myRef.child( curUser.room ).child( curUser.firstName ).setValue( curUser )
+                            myRef.child( curUser.room ).child( "roommates" ).child( curUser.firstName ).setValue( curUser )
                                     .addOnSuccessListener( new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
