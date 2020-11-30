@@ -68,39 +68,33 @@ public class RoommateViewActivity extends AppCompatActivity {
         DataSnapshot rooms = null;
         String realCurrentRoom = "0";
 
-       for(DataSnapshot ds : dataSnapshot.getChildren()) {
-           User uInfo = new User();
-           Log.d(TAG, "getRoommateData from database.");
-           Log.d(TAG, "Current datasnap: " + ds);
-           String currentRoom = ds.child(userID).child("room").getValue(String.class);
-           if (currentRoom != null) {
-               realCurrentRoom = currentRoom;
-               Log.d(TAG, "currentRoom: " + realCurrentRoom);
-               title.setText("Room Number: " + realCurrentRoom);
+        for(DataSnapshot ds : dataSnapshot.getChildren()) {
+            User uInfo = new User();
+            Log.d(TAG, "getRoommateData from database.");
+            Log.d(TAG, "Current datasnap: " + ds);
+            String currentRoom = ds.child(userID).child("room").getValue(String.class);
+            if (currentRoom != null) {
+                realCurrentRoom = currentRoom;
+                Log.d(TAG, "currentRoom: " + realCurrentRoom);
+                title.setText("Room Number: " + realCurrentRoom);
 
-           } else
-               rooms = ds;
+            } else
+                rooms = ds;
 
-       }
-
-
+        }
 
         for(DataSnapshot ds : rooms.child(realCurrentRoom).child("roommates").getChildren()){
             array.add(ds.getKey());
         }
-
-
-            try {
+        try {
             ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.textview, array);
             mListView.setAdapter(adapter);
-            }
-            catch(NullPointerException e){
-                array.add("There are no roommates.");
-                ArrayAdapter adapt = new ArrayAdapter<String>(this, R.layout.list_item, R.id.textview, array);
-                mListView.setAdapter(adapt);
-            }
-
-
+        }
+        catch(NullPointerException e){
+            array.add("There are no roommates.");
+            ArrayAdapter adapt = new ArrayAdapter<String>(this, R.layout.list_item, R.id.textview, array);
+            mListView.setAdapter(adapt);
+        }
     }
 
 
