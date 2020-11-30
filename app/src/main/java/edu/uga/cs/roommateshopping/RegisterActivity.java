@@ -86,7 +86,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     /*
-    * This class defines all variables of the user that will be added to the database
+     * This class defines all variables of the user that will be added to the database
      */
     public class User {
         public String firstName;
@@ -119,10 +119,38 @@ public class RegisterActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail: success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            String userID = user.getUid();
 
                             // Get database instance
                             database = FirebaseDatabase.getInstance();
-                            DatabaseReference myRef = database.getReference("rooms");
+                            DatabaseReference myRef = database.getReference("users");
+
+                            // Get room if it exists, add new roommate to database
+                            myRef.child( userID ).setValue( curUser )
+                                    .addOnSuccessListener( new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Show a quick confirmation
+                                            Toast.makeText(getApplicationContext(), "User Created :  " + curUser.firstName,
+                                                    Toast.LENGTH_SHORT).show();
+
+                                            // Clear the EditTexts for next use.
+                                            firstNameText.setText("");
+                                            lastNameText.setText("");
+                                            emailText.setText("");
+                                            passwordText.setText("");
+                                            roomNumber.setText("");
+                                        }
+                                    })
+                                    .addOnFailureListener( new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(Exception e) {
+                                            Toast.makeText( getApplicationContext(), "Failed to create a User for " + curUser.firstName,
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                            myRef = database.getReference("rooms");
 
                             // Get room if it exists, add new roommate to database
                             myRef.child( curUser.room ).child( "roommates" ).child( curUser.firstName ).setValue( curUser )

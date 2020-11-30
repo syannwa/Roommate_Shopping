@@ -42,6 +42,9 @@ public class MainNavigationActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             //Display Roommates List
+            Intent intent = new Intent(v.getContext(), RoommateViewActivity.class);
+            v.getContext().startActivity(intent);
+
         }
     }
 

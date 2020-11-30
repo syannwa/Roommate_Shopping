@@ -9,4 +9,5 @@
     <string name="email">Email</string>
     <string name="person_with_cart">Person with cart</string>
     <string name="login">Login</string>
+    <string name="room_num">ROOM NUM</string>
 </resources>
