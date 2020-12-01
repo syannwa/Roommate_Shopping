@@ -18,4 +18,13 @@
         android:inputType="number"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/priceText"
+        android:padding="10dp"
+        android:layout_margin="4dp"
+        android:hint="Price"
+        android:inputType="numberDecimal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

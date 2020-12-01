@@ -38,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText passwordText;
     private EditText roomNumber;
     private FirebaseDatabase database;
+
     //private ActivityEmailpasswordBinding mBinding;
 
 
@@ -172,6 +173,26 @@ public class RegisterActivity extends AppCompatActivity {
                                         @Override
                                         public void onFailure(Exception e) {
                                             Toast.makeText( getApplicationContext(), "Failed to create a User for " + curUser.firstName,
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                            // Create list maybe?
+                            myRef = database.getReference("lists");
+                            Item item = new Item ("Example", 3, 10.00);
+                            myRef.child( curUser.room ).child( item.getName() ).setValue( item )
+                                    .addOnSuccessListener( new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Show a quick confirmation
+                                            Toast.makeText(getApplicationContext(), "Example Item Added :  " + item.getName(),
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener( new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(Exception e) {
+                                            Toast.makeText( getApplicationContext(), "Failed to create Example Item.",
                                                     Toast.LENGTH_SHORT).show();
                                         }
                                     });

@@ -26,12 +26,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShoppingList extends AppCompatActivity {
 
-    public static final String DEBUG_TAG = "ShoppingList";
+    public static final String DEBUG_TAG = "ShoppingList_DEBUG";
 
     private FirebaseDatabase database;
     private FirebaseAuth mAuth;
@@ -40,21 +41,28 @@ public class ShoppingList extends AppCompatActivity {
     private String userID;
     private ListView listView;
     private ArrayAdapter arrayAdapter;
+    private ThreeColumn_Adapter adapter;
 
-    private List<String> itemsList;
+    String realCurrentRoom;
+    String roomNumber;
+
+    private ArrayList<Item> itemsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
 
-        itemsList = new ArrayList<String>();
+        itemsList = new ArrayList<Item>();
         listView = findViewById(R.id.list_view);
-        arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, itemsList);
-        listView.setAdapter(arrayAdapter);
+        //arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, itemsList);
+        adapter =  new ThreeColumn_Adapter(ShoppingList.this,R.layout.activity_three_column__adapter, itemsList);
+        listView.setAdapter(adapter);
 
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("list");
+        // Get database reference
+        myRef = FirebaseDatabase.getInstance().getReference();
+
+        // Get user and User ID
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         userID = user.getUid();
@@ -62,35 +70,50 @@ public class ShoppingList extends AppCompatActivity {
         // database stuff
         myRef.addListenerForSingleValueEvent( new ValueEventListener() {
 
-            // GET THE PROPER SHOPPING LIST BELOW
-
             @Override
             public void onDataChange( DataSnapshot snapshot ) {
                 // Once we have a DataSnapshot object, knowing that this is a list,
                 // we need to iterate over the elements and place them on a List.
-                DataSnapshot rooms = null;
                 DataSnapshot lists = null;
                 String realCurrentRoom = "0";
 
                 for(DataSnapshot ds : snapshot.getChildren()) {
+                    // Gets the room number value
                     String currentRoom = ds.child(userID).child("room").getValue(String.class);
+                    roomNumber = ds.child(userID).child("room").getValue(String.class);
+                    Log.d(DEBUG_TAG, "Room Num: " + roomNumber);
+
                     if (currentRoom != null) {
                         realCurrentRoom = currentRoom;
                     } else
-                        lists = ds;
+                        lists = snapshot.child("lists");
                 }
 
                 for(DataSnapshot ds : lists.child(realCurrentRoom).getChildren()){
-                    itemsList.add(ds.getKey());
+                    Log.d(DEBUG_TAG, "DS Key: " + ds.getKey());
+
+                    // Get item information
+                    String name = ds.getValue(Item.class).getName();
+                    Integer quantity = ds.getValue(Item.class).getQuantity();
+                    Double price = ds.getValue(Item.class).getPrice();
+                    Log.d(DEBUG_TAG, "Name: " + name + ", Quantity: " + quantity + ", Price: " + price);
+
+                    // Add item to list
+                    Item newItem = new Item(name, quantity, price);
+                    itemsList.add(newItem);
+                    Log.d(DEBUG_TAG, "Items List: " + itemsList);
                 }
                 try {
-                    arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, itemsList);
-                    listView.setAdapter(arrayAdapter);
+                    //arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, itemsList);
+                    adapter =  new ThreeColumn_Adapter(ShoppingList.this,R.layout.activity_three_column__adapter, itemsList);
+                    listView.setAdapter(adapter);
                 }
                 catch(NullPointerException e){
-                    itemsList.add("There are no roommates.");
-                    arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, itemsList);
-                    listView.setAdapter(arrayAdapter);
+                    ArrayList array = new ArrayList<String>();
+                    array.add("There are no roommates.");
+                    //arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, array);
+                    adapter =  new ThreeColumn_Adapter(ShoppingList.this,R.layout.activity_three_column__adapter, itemsList);
+                    listView.setAdapter(adapter);
                 }
             }
 
@@ -116,23 +139,43 @@ public class ShoppingList extends AppCompatActivity {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(ShoppingList.this);
                                 View v = LayoutInflater.from(ShoppingList.this).inflate(R.layout.item_dialog, null, false);
                                 builder.setTitle("Update Item");
-                                final EditText editText = v.findViewById(R.id.itemText);
-                                editText.setText(itemsList.get(position));
+
+                                EditText editName = v.findViewById(R.id.itemText);
+                                EditText editQuantity = v.findViewById(R.id.quantityText);
+                                EditText editPrice = v.findViewById(R.id.priceText);
+                                editName.setText(itemsList.get(position).getName());
+                                editQuantity.setText(itemsList.get(position).getQuantity().toString());
+                                editPrice.setText(itemsList.get(position).getPrice().toString());
 
                                 builder.setView(v);
 
                                 builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        if (!editText.getText().toString().isEmpty()) {
-                                            itemsList.set(position, editText.getText().toString().trim());
-                                            // update database
-                                            arrayAdapter.notifyDataSetChanged();
-                                            Toast.makeText(ShoppingList.this, "Item Updated!", Toast.LENGTH_SHORT).show();
-
-                                        } else {
-                                            editText.setError("Update the Item!");
+                                        if (!editName.getText().toString().isEmpty()) {
+                                            myRef.child("lists").child(roomNumber).child(itemsList.get(position).getName()).removeValue();
+                                            itemsList.get(position).setName(editName.getText().toString().trim());
                                         }
+                                        else {
+                                            editName.setError("Update the Item!");
+                                        }
+                                        if (!editQuantity.getText().toString().isEmpty()){
+                                            itemsList.get(position).setQuantity(Integer.parseInt(editQuantity.getText().toString().trim()));
+                                        }
+                                        else {
+                                            editQuantity.setError("Update the Item!");
+                                        }
+                                        if (!editPrice.getText().toString().isEmpty()){
+                                            itemsList.get(position).setPrice(Double.parseDouble(editPrice.getText().toString().trim()));
+                                        }
+                                        else {
+                                            editPrice.setError("Update the Item!");
+                                        }
+
+                                        // update database
+                                        myRef.child("lists").child( roomNumber ).child( itemsList.get(position).getName()).setValue( itemsList.get(position));
+                                        adapter.notifyDataSetChanged();
+                                        Toast.makeText(ShoppingList.this, "Item Updated!", Toast.LENGTH_SHORT).show();
                                     }
                                 });
 
@@ -150,9 +193,15 @@ public class ShoppingList extends AppCompatActivity {
                             case R.id.itemDelete:
                                 // case for delete
                                 Toast.makeText(ShoppingList.this, "Item Deleted", Toast.LENGTH_SHORT).show();
+
+                                // delete from database
+                                Log.d(DEBUG_TAG, "Room Number: " + roomNumber);
+                                Log.d(DEBUG_TAG, "Item: " + itemsList.get(position).getName());
+                                myRef.child("lists").child(roomNumber).child(itemsList.get(position).getName()).removeValue();
+                                adapter.notifyDataSetChanged();
+
+                                // update local list
                                 itemsList.remove(position);
-                                // update database
-                                arrayAdapter.notifyDataSetChanged();
                                 break;
                         }
 
@@ -187,6 +236,7 @@ public class ShoppingList extends AppCompatActivity {
     }
 
     private void addItem() {
+        // Create an "Add item" pop-up alert
         AlertDialog.Builder builder = new AlertDialog.Builder(ShoppingList.this);
         builder.setTitle("Add New Item");
 
@@ -196,6 +246,7 @@ public class ShoppingList extends AppCompatActivity {
         Item item = new Item();
         EditText etItem = v.findViewById(R.id.itemText);
         EditText etQuantity = v.findViewById(R.id.quantityText);
+        EditText etPrice = v.findViewById(R.id.priceText);
 
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
@@ -204,13 +255,24 @@ public class ShoppingList extends AppCompatActivity {
                     etItem.setError("Fill in available fields");
                 }
                 else{
+                    //create item to be added
                     item.setName(etItem.getText().toString().trim());
                     item.setQuantity(Integer.parseInt(etQuantity.getText().toString()));
+                    item.setPrice(Double.parseDouble(etPrice.getText().toString()));
+                    Log.d(DEBUG_TAG, "Item name: " + item.getName());
+                    Log.d(DEBUG_TAG, "Item quantity: " + item.getQuantity());
+                    Log.d(DEBUG_TAG, "Item price: " + item.getPrice());
+
                     // add item to database here
+                    Log.d(DEBUG_TAG, "Room: " + realCurrentRoom);
+                    Log.d(DEBUG_TAG, "Name: " + item.getName());
+                    myRef.child("lists").child( roomNumber ).child( item.getName() ).setValue( item );
 
-                    itemsList.add(item.getName());
-                    arrayAdapter.notifyDataSetChanged();
+                    // add item to local list
+                    itemsList.add(item);
 
+                    // update the adapter
+                    adapter.notifyDataSetChanged();
                 }
             }
         });

@@ -9,7 +9,7 @@ public class Item {
     public Item() {
         this.name = "";
         this.quantity = 0;
-        this.price = 0.0;
+        this.price = 10.0;
     }
 
     public Item(String name, Integer quantity, Double price) {

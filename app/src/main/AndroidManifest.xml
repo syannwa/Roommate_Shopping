@@ -4,13 +4,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_custom"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher_custom_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RoommateShopping">
-
-<!--        Main Activity => Login and Register -->
+        <!-- Main Activity => Login and Register -->
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,9 +30,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
-        </activity>
-
-<!--        Navigation Activity => Roommates List, Shopping List, Purchased View, Cash Out  -->
+        </activity> <!-- Navigation Activity => Roommates List, Shopping List, Purchased View, Cash Out -->
         <activity android:name=".MainNavigationActivity" />
         <activity
             android:name=".ShoppingList"
