@@ -41,20 +41,23 @@ public class ShoppingList extends AppCompatActivity {
     private ListView listView;
     private ArrayAdapter arrayAdapter;
 
-    private List<Item> itemsList;
+    private List<String> itemsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
 
-        itemsList = new ArrayList<Item>();
+        itemsList = new ArrayList<String>();
         listView = findViewById(R.id.list_view);
         arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, itemsList);
         listView.setAdapter(arrayAdapter);
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("list");
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        userID = user.getUid();
 
         // database stuff
         myRef.addListenerForSingleValueEvent( new ValueEventListener() {
@@ -65,7 +68,6 @@ public class ShoppingList extends AppCompatActivity {
             public void onDataChange( DataSnapshot snapshot ) {
                 // Once we have a DataSnapshot object, knowing that this is a list,
                 // we need to iterate over the elements and place them on a List.
-                ArrayList<String> array = new ArrayList<>();
                 DataSnapshot rooms = null;
                 DataSnapshot lists = null;
                 String realCurrentRoom = "0";
@@ -79,16 +81,16 @@ public class ShoppingList extends AppCompatActivity {
                 }
 
                 for(DataSnapshot ds : lists.child(realCurrentRoom).getChildren()){
-                    array.add(ds.getKey());
+                    itemsList.add(ds.getKey());
                 }
                 try {
-//                    ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.textview, itemsList);
-//                    listView.setAdapter(adapter);
+                    arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, itemsList);
+                    listView.setAdapter(arrayAdapter);
                 }
                 catch(NullPointerException e){
-                    array.add("There are no roommates.");
-//                    ArrayAdapter adapt = new ArrayAdapter<String>(this, R.layout.list_item, R.id.textview, itemsList);
-//                    listView.setAdapter(adapt);
+                    itemsList.add("There are no roommates.");
+                    arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, itemsList);
+                    listView.setAdapter(arrayAdapter);
                 }
             }
 
@@ -115,7 +117,7 @@ public class ShoppingList extends AppCompatActivity {
                                 View v = LayoutInflater.from(ShoppingList.this).inflate(R.layout.item_dialog, null, false);
                                 builder.setTitle("Update Item");
                                 final EditText editText = v.findViewById(R.id.itemText);
-                                editText.setText(itemsList.get(position).getName());
+                                editText.setText(itemsList.get(position));
 
                                 builder.setView(v);
 
@@ -123,7 +125,7 @@ public class ShoppingList extends AppCompatActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         if (!editText.getText().toString().isEmpty()) {
-                                            itemsList.get(position).setName(editText.getText().toString().trim());
+                                            itemsList.set(position, editText.getText().toString().trim());
                                             // update database
                                             arrayAdapter.notifyDataSetChanged();
                                             Toast.makeText(ShoppingList.this, "Item Updated!", Toast.LENGTH_SHORT).show();
@@ -206,7 +208,7 @@ public class ShoppingList extends AppCompatActivity {
                     item.setQuantity(Integer.parseInt(etQuantity.getText().toString()));
                     // add item to database here
 
-                    itemsList.add(item);
+                    itemsList.add(item.getName());
                     arrayAdapter.notifyDataSetChanged();
 
                 }

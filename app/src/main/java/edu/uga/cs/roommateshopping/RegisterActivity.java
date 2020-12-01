@@ -123,9 +123,9 @@ public class RegisterActivity extends AppCompatActivity {
 
                             // Get database instance
                             database = FirebaseDatabase.getInstance();
-                            DatabaseReference myRef = database.getReference("users");
 
-                            // Get room if it exists, add new roommate to database
+                            // Add user
+                            DatabaseReference myRef = database.getReference("users");
                             myRef.child( userID ).setValue( curUser )
                                     .addOnSuccessListener( new OnSuccessListener<Void>() {
                                         @Override
@@ -150,9 +150,8 @@ public class RegisterActivity extends AppCompatActivity {
                                         }
                                     });
 
-                            myRef = database.getReference("rooms");
-
                             // Get room if it exists, add new roommate to database
+                            myRef = database.getReference("rooms");
                             myRef.child( curUser.room ).child( "roommates" ).child( curUser.firstName ).setValue( curUser )
                                     .addOnSuccessListener( new OnSuccessListener<Void>() {
                                         @Override
