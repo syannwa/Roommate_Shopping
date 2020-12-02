@@ -45,6 +45,7 @@ public class PurchasedList extends AppCompatActivity {
     private Long numRoommates;
     String realRoom = "0";
     private ArrayList<Item> itemsList;
+    String name = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,19 +177,58 @@ public class PurchasedList extends AppCompatActivity {
     private class SettleCostClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+
             Log.d(DEBUG_TAG, "Num Roommates: " + numRoommates);
             Double individualCost = total / numRoommates;
             Log.d(DEBUG_TAG, "Indiv Cost: " + individualCost);
 
-            FirebaseDatabase.getInstance().getReference().child("rooms").child(realRoom).child("roommates")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            ArrayList<String> array = new ArrayList<>();
+
+                            //gets the name of the current user from the users database
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                // @TODO : fix this shit
-                                snapshot.child("payments").child(user.getEmail()).child("" + individualCost);
-                                Log.d(DEBUG_TAG, "email: " + user.getEmail());
+                                if(snapshot.getKey().equals("users")) {
+                                    name = snapshot.child(userID).child("firstName").getValue(String.class);
+                                }
                             }
+
+                            //this one gets the roommate names that are in the current room
+                            for(DataSnapshot ds : dataSnapshot.child("rooms")
+                                    .child(realRoom).child("roommates").getChildren()){
+                                array.add(ds.getKey());
+                            }
+
+                            //this sets the payment owed for each roommate that's not the current user
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                                Log.d(DEBUG_TAG, "room: " + realRoom);
+                                Log.d(DEBUG_TAG, "name: " + name);
+                                if(snapshot.getKey().equals("rooms")) {
+                                    //goes through every roommate in the array of roommates we found above
+                                    for(int i = 0; i < array.size(); i++) {
+                                        //if the roommate is not the current user
+                                        if (!(snapshot.child(realRoom).child("roommates").child(array.get(i)).getKey().toString().equals(name))) {
+                                            Log.d(DEBUG_TAG, "name in array: " + array.get(i));
+                                            //record how much they owe the current user who purchased something
+                                            snapshot.getRef().child(realRoom).child("roommates").child(array.get(i)).child("payments").child(name).child("moneyOwed").setValue(individualCost);
+                                        }
+                                    }
+                                }
+                            }
+
+                            //clear the purchased list since it's settled now
+                            //this will just delete everything from purchased list
+                            //and reset the total at the top to 0
+                            myRef.child("users").child(userID).child("purchased").removeValue();
+                            adapter.clear();
+                            totalText.setText("0.0");
+                            adapter.notifyDataSetChanged();
+                            //message for successful cost settled
+                            Toast.makeText(getApplicationContext(), "Cost Settled: " + individualCost,
+                                    Toast.LENGTH_SHORT).show();
+
                         }
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
