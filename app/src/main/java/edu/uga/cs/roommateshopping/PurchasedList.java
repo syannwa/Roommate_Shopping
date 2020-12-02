@@ -1,12 +1,21 @@
 package edu.uga.cs.roommateshopping;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,7 +42,8 @@ public class PurchasedList extends AppCompatActivity {
     private TextView totalText;
 
     private Double total = 0.0;
-    String roomNumber;
+    private Long numRoommates;
+    String realRoom = "0";
     private ArrayList<Item> itemsList;
 
     @Override
@@ -46,10 +56,13 @@ public class PurchasedList extends AppCompatActivity {
         listView = findViewById(R.id.list_view);
         adapter =  new ThreeColumn_Adapter(PurchasedList.this,R.layout.activity_three_column__adapter, itemsList);
         totalText = findViewById(R.id.totalText);
-        settleCostButton = findViewById(R.id.paybackButton);
+        settleCostButton = findViewById(R.id.settleCostButton);
         listView.setAdapter(adapter);
 
-        myRef = FirebaseDatabase.getInstance().getReference("users");
+        // Settle Cost Click Listener
+        settleCostButton.setOnClickListener(new SettleCostClickListener());
+
+        myRef = FirebaseDatabase.getInstance().getReference();
 
         // Get user and User ID
         mAuth = FirebaseAuth.getInstance();
@@ -64,7 +77,21 @@ public class PurchasedList extends AppCompatActivity {
                 // Once we have a DataSnapshot object, knowing that this is a list,
                 // we need to iterate over the elements and place them on a List.
 
-                for(DataSnapshot ds : snapshot.child(userID).child("purchased").getChildren()){
+                DataSnapshot rooms = null;
+                realRoom = "0";
+
+                // Get room num
+                for(DataSnapshot ds : snapshot.getChildren()) {
+                    String currentRoom = ds.child(userID).child("room").getValue(String.class);
+                    if (currentRoom != null) {
+                        realRoom = currentRoom;
+                    } else
+                        rooms = ds;
+                }
+
+                numRoommates = snapshot.child("rooms").child(realRoom).child("roommates").getChildrenCount();
+
+                for(DataSnapshot ds : snapshot.child("users").child(userID).child("purchased").getChildren()){
                     Log.d(DEBUG_TAG, "DS Key: " + ds.getKey());
 
                     // Get item information
@@ -79,23 +106,16 @@ public class PurchasedList extends AppCompatActivity {
                     Log.d(DEBUG_TAG, "Items List: " + itemsList);
                 }
                 try {
-                    this.calculateTotal(itemsList);
+                    calculateTotal(itemsList);
                     adapter =  new ThreeColumn_Adapter(PurchasedList.this,R.layout.activity_three_column__adapter, itemsList);
                     listView.setAdapter(adapter);
                 }
                 catch(NullPointerException e){
                     ArrayList array = new ArrayList<String>();
                     array.add("There are no purchased Items");
-                    adapter =  new ThreeColumn_Adapter(PurchasedList.this,R.layout.activity_three_column__adapter, itemsList);
+                    adapter =  new ThreeColumn_Adapter(PurchasedList.this,R.layout.activity_three_column__adapter, array);
                     listView.setAdapter(adapter);
                 }
-            }
-
-            private void calculateTotal(ArrayList<Item> itemsList) {
-                for(Item item : itemsList) {
-                    total += item.getPrice();
-                }
-                totalText.setText("" + total);
             }
 
             @Override
@@ -104,6 +124,76 @@ public class PurchasedList extends AppCompatActivity {
             }
         } );
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                PopupMenu popupMenu = new PopupMenu(PurchasedList.this, view);
+                popupMenu.getMenuInflater().inflate(R.menu.purchased_menu, popupMenu.getMenu());
 
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+
+                        switch (item.getItemId()) {
+
+                            case R.id.itemShop:
+                                // case for moving item to shopping list
+
+                                // add item to shopping list
+                                Log.d(DEBUG_TAG, "Room Number: " + realRoom);
+                                Log.d(DEBUG_TAG, "Item Name: " + itemsList.get(position).getName());
+                                Log.d(DEBUG_TAG, "Item: " + itemsList.get(position));
+                                myRef.child("lists").child(realRoom).child(itemsList.get(position).getName()).setValue(itemsList.get(position));
+                                // remove item from purchased list
+                                myRef.child("users").child(userID).child("purchased").child(itemsList.get(position).getName()).removeValue();
+
+                                itemsList.remove(position);
+                                calculateTotal(itemsList);
+
+                                adapter.notifyDataSetChanged();
+                                break;
+                        }
+
+                        return true;
+                    }
+                });
+
+                popupMenu.show();
+
+            }
+        });
+
+
+    }
+
+    private void calculateTotal(ArrayList<Item> itemsList) {
+        for(Item item : itemsList) {
+            total += item.getPrice();
+        }
+        totalText.setText("" + total);
+    }
+
+    private class SettleCostClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            Log.d(DEBUG_TAG, "Num Roommates: " + numRoommates);
+            Double individualCost = total / numRoommates;
+            Log.d(DEBUG_TAG, "Indiv Cost: " + individualCost);
+
+            FirebaseDatabase.getInstance().getReference().child("rooms").child(realRoom).child("roommates")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                // @TODO : fix this shit
+                                snapshot.child("payments").child(user.getEmail()).child("" + individualCost);
+                                Log.d(DEBUG_TAG, "email: " + user.getEmail());
+                            }
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+        }
     }
 }
