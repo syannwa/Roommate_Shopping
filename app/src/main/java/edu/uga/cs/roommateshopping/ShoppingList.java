@@ -89,6 +89,7 @@ public class ShoppingList extends AppCompatActivity {
                         lists = snapshot.child("lists");
                 }
 
+                // For each item in the Shopping List, get the information
                 for(DataSnapshot ds : lists.child(realCurrentRoom).getChildren()){
                     Log.d(DEBUG_TAG, "DS Key: " + ds.getKey());
 
@@ -202,6 +203,19 @@ public class ShoppingList extends AppCompatActivity {
 
                                 // update local list
                                 itemsList.remove(position);
+                                break;
+
+                            case R.id.itemPurchased:
+                                // case for purchased item
+
+                                // add to user's purchased list
+                                myRef.child("users").child(userID).child("purchased").child(itemsList.get(position).getName()).setValue(itemsList.get(position));
+                                // remove from group shopping list
+                                myRef.child("lists").child(roomNumber).child(itemsList.get(position).getName()).removeValue();
+                                // update local list
+                                itemsList.remove(position);
+
+                                adapter.notifyDataSetChanged();
                                 break;
                         }
 

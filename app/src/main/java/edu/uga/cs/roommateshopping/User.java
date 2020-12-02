@@ -1,5 +1,7 @@
 package edu.uga.cs.roommateshopping;
 
+import java.util.ArrayList;
+
 /*
  * This class defines all variables of the user that will be added to the database
  */
@@ -8,6 +10,7 @@ public class User {
     public String lastName;
     public String email;
     public String room;
+    public ArrayList<Item> purchasedList;
 
     // Default constructor required for calls to DataSnapshot
     public User() {
@@ -18,6 +21,7 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.room = room;
+        this.purchasedList = new ArrayList<Item>();
     }
 
     public void setFirstName(String firstName) {

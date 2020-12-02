@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_custom_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RoommateShopping">
+        <activity android:name=".PurchasedList"></activity>
         <!-- Main Activity => Login and Register -->
         <activity android:name=".MainActivity">
             <intent-filter>

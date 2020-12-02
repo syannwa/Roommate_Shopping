@@ -86,26 +86,26 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    /*
-     * This class defines all variables of the user that will be added to the database
-     */
-    public class User {
-        public String firstName;
-        public String lastName;
-        public String email;
-        public String room;
-
-        // Default constructor required for calls to DataSnapshot
-        public User() {
-        }
-
-        public User(String firstName, String lastName, String email, String room) {
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.email = email;
-            this.room = room;
-        }
-    }
+//    /*
+//     * This class defines all variables of the user that will be added to the database
+//     */
+//    public class User {
+//        public String firstName;
+//        public String lastName;
+//        public String email;
+//        public String room;
+//
+//        // Default constructor required for calls to DataSnapshot
+//        public User() {
+//        }
+//
+//        public User(String firstName, String lastName, String email, String room) {
+//            this.firstName = firstName;
+//            this.lastName = lastName;
+//            this.email = email;
+//            this.room = room;
+//        }
+//    }
 
     private void createAccount(String email, String password, User curUser) {
         Log.d(TAG, "createAccount: " + email);

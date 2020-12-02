@@ -27,7 +27,7 @@ public class MainNavigationActivity extends AppCompatActivity {
         roommates = findViewById(R.id.roommatesListButton);
         groupShop = findViewById(R.id.groupShoppingButton);
         purchased = findViewById(R.id.purchasesButton);
-        cashOut = findViewById(R.id.cashOutButton);
+        cashOut = findViewById(R.id.paybackButton);
         logout = findViewById(R.id.logoutButton);
 
         roommates.setOnClickListener(new RoommatesClickListener());
@@ -63,6 +63,8 @@ public class MainNavigationActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             //Display Purchased List
+            Intent intent = new Intent(v.getContext(), PurchasedList.class);
+            v.getContext().startActivity(intent);
         }
     }
 
