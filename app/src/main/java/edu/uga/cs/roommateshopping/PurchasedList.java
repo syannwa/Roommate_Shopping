@@ -202,7 +202,6 @@ public class PurchasedList extends AppCompatActivity {
 
                             //this sets the payment owed for each roommate that's not the current user
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
                                 Log.d(DEBUG_TAG, "room: " + realRoom);
                                 Log.d(DEBUG_TAG, "name: " + name);
                                 if(snapshot.getKey().equals("rooms")) {

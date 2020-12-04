@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_custom_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RoommateShopping">
-        <activity android:name=".PurchasedList"></activity>
+
         <!-- Main Activity => Login and Register -->
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -31,7 +31,9 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
-        </activity> <!-- Navigation Activity => Roommates List, Shopping List, Purchased View, Cash Out -->
+        </activity>
+
+        <!-- Navigation Activity => Roommates List, Shopping List, Purchased View, Cash Out -->
         <activity android:name=".MainNavigationActivity" />
         <activity
             android:name=".ShoppingList"
@@ -42,6 +44,21 @@
         </activity>
         <activity
             android:name=".RoommateViewActivity"
+            android:parentActivityName=".MainNavigationActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainNavigationActivity" />
+        </activity>
+
+        <activity
+            android:name=".PaymentsListActivity"
+            android:parentActivityName=".MainNavigationActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainNavigationActivity" />
+        </activity>
+        <activity
+            android:name=".PurchasedList"
             android:parentActivityName=".MainNavigationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

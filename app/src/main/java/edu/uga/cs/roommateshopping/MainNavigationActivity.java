@@ -72,7 +72,9 @@ public class MainNavigationActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            //Display Cash out screen
+            //Display Payments screen
+            Intent intent = new Intent(v.getContext(), PaymentsListActivity.class);
+            v.getContext().startActivity(intent);
         }
     }
 
