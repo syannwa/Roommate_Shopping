@@ -1,18 +1,22 @@
 package edu.uga.cs.roommateshopping;
 
+import java.text.DecimalFormat;
+
 public class Payment {
 
     String person;
-    Double payment;
+    String payment;
+
+    DecimalFormat df = new DecimalFormat("###.##");
 
     public Payment() {
         this.person = "" ;
-        this.payment = 0.0;
+        this.payment = df.format(0.00);
     }
 
     public Payment(String person, Double payment) {
         this.person = person;
-        this.payment = payment;
+        this.payment = df.format(payment);
     }
 
     public String getPerson() {
@@ -23,11 +27,11 @@ public class Payment {
         this.person = person;
     }
 
-    public Double getPayment() {
+    public String getPayment() {
         return payment;
     }
 
     public void setPayment(Double payment) {
-        this.payment = payment;
+        this.payment = df.format(payment);
     }
 }

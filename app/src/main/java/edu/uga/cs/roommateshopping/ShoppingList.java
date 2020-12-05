@@ -113,7 +113,7 @@ public class ShoppingList extends AppCompatActivity {
                     ArrayList array = new ArrayList<String>();
                     array.add("There are no roommates.");
                     //arrayAdapter = new ArrayAdapter(ShoppingList.this, android.R.layout.simple_list_item_1, array);
-                    adapter =  new ThreeColumn_Adapter(ShoppingList.this,R.layout.activity_three_column__adapter, itemsList);
+                    adapter =  new ThreeColumn_Adapter(ShoppingList.this,R.layout.activity_three_column__adapter, array);
                     listView.setAdapter(adapter);
                 }
             }

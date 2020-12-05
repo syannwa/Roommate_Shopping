@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 
 public class TwoColumn_Adapter extends ArrayAdapter<Payment> {
 
+    private static final String DEBUG_TAG = "TwoColumn_DEBUG";
     private LayoutInflater mInflater;
     private ArrayList<Payment> payments;
     private int mViewResourceId;
@@ -37,7 +39,8 @@ public class TwoColumn_Adapter extends ArrayAdapter<Payment> {
                 name.setText(payments.get(position).getPerson());
             }
             if (payment != null) {
-                payment.setText("" + payments.get(position).getPayment().toString());
+                Log.d(DEBUG_TAG, "Payment: " + payments.get(position).getPayment());
+                payment.setText("" + payments.get(position).getPayment());
             }
         }
 

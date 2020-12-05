@@ -5,16 +5,14 @@
     android:weightSum="100">
 
     <TextView
-        android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_weight="33"
+        android:layout_weight="50"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/textName"/>
     <TextView
-        android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_weight="33"
+        android:layout_weight="50"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/textPayment"/>
