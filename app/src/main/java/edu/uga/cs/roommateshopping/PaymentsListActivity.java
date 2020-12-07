@@ -20,6 +20,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+/**
+ * This PaymentsListActivity handles the function for our payments list.
+ * It handles all the functions of displaying the owed payments to other roommates
+ * and handling the payment of these by removing the payment owed from the list when paid.
+ */
 public class PaymentsListActivity extends AppCompatActivity {
 
     public static final String DEBUG_TAG = "Payments_DEBUG";
@@ -39,6 +44,13 @@ public class PaymentsListActivity extends AppCompatActivity {
 
     private ArrayList<Payment> paymentsList;
 
+    /**
+     * On create, gets current user's payments that they owe to any
+     * other roommates from the database and displays them in a list. If a user
+     * decides to pay a payment, it gets settled and is removed from the database.
+     *
+     * @param savedInstanceState the bundled saved state of the application
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +61,7 @@ public class PaymentsListActivity extends AppCompatActivity {
         adapter =  new TwoColumn_Adapter(PaymentsListActivity.this,R.layout.activity_two_column__adapter, paymentsList);
         listView.setAdapter(adapter);
 
+        //gets current instance and current user's information
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
@@ -57,6 +70,11 @@ public class PaymentsListActivity extends AppCompatActivity {
 
         myRef.addListenerForSingleValueEvent( new ValueEventListener() {
 
+            /**
+             *
+             *
+             * @param snapshot a snapshot of our current database
+             */
             @Override
             public void onDataChange( DataSnapshot snapshot ) {
                 // Once we have a DataSnapshot object, knowing that this is a list,
@@ -103,6 +121,11 @@ public class PaymentsListActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * On a read failed or cancelled, this throws us an error
+             *
+             * @param databaseError the error our database throws
+             */
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getMessage());
@@ -116,6 +139,14 @@ public class PaymentsListActivity extends AppCompatActivity {
                 popupMenu.getMenuInflater().inflate(R.menu.payments_menu, popupMenu.getMenu());
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    /**
+                     * if a payment is made, handles what happens to it.
+                     * in this case, the payment will be removed from the database
+                     * since it is now settled
+                     *
+                     * @param item the payment we have decided to pay
+                     * @return
+                     */
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
 

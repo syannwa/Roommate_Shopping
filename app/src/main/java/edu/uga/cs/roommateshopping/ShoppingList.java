@@ -30,6 +30,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ShoppingList extends AppCompatActivity {
 
     public static final String DEBUG_TAG = "ShoppingList_DEBUG";
@@ -48,6 +49,13 @@ public class ShoppingList extends AppCompatActivity {
 
     private ArrayList<Item> itemsList;
 
+    /**
+     * on create, gets all the current information and grabs data from the
+     * database to make sure that this room's shopping list information gets displayed
+     * for each user.
+     *
+     * @param savedInstanceState the bundled saved state of the application
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +78,11 @@ public class ShoppingList extends AppCompatActivity {
         // database stuff
         myRef.addListenerForSingleValueEvent( new ValueEventListener() {
 
+            /**
+             *
+             *
+             * @param snapshot a snapshot of our current database
+             */
             @Override
             public void onDataChange( DataSnapshot snapshot ) {
                 // Once we have a DataSnapshot object, knowing that this is a list,
@@ -118,6 +131,11 @@ public class ShoppingList extends AppCompatActivity {
                 }
             }
 
+            /**
+             * On a read failed or cancelled, this throws us an error
+             *
+             * @param databaseError the error our database throws
+             */
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getMessage());

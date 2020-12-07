@@ -17,6 +17,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * The main class for running the login functionality
+ */
 public class LoginActivity extends AppCompatActivity
 {
 
@@ -28,7 +31,9 @@ public class LoginActivity extends AppCompatActivity
     private EditText emailText;
     private EditText passwordText;
 
-
+    /**
+     * Creates the basic information for the login activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,18 +43,28 @@ public class LoginActivity extends AppCompatActivity
         emailText = findViewById(R.id.emailText2);
         passwordText = findViewById(R.id.passwordText2);
 
+        //listener for the login button
         login.setOnClickListener(new LoginActivity.ButtonClickListener());
     }
 
+    /**
+     * On start, gets the current user
+     */
     @Override
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
     }
 
+    /**
+     * Listener for the login button.
+     */
     private class ButtonClickListener implements View.OnClickListener {
 
+        /**
+         * on click, gets the email and password from the
+         * edit views and calls the signInUser method
+         */
         @Override
         public void onClick(View v) {
             String email = emailText.getText().toString();
@@ -58,11 +73,26 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Attempts to sign in a user based on the information
+     * they have provided to the app.
+     *
+     * @param email the email that was retrieved from the user input
+     * @param password the password retrieved from the user's input
+     */
     private void signInUser(String email, String password) {
         Log.d(TAG, "signInUser:" + email);
 
+        //attempts a sign in
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    /**
+                     * Attempts a sign in. If successful sign in, display successful message
+                     * and then calls updateUI method. If unsuccessful, does not allow
+                     * the user to go on to the next screen and displays an error.
+                     *
+                     * @param task the sign-in attempt
+                     */
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -82,6 +112,13 @@ public class LoginActivity extends AppCompatActivity
                 });
     }
 
+    /**
+     * This is called on a successful sign in. When someone signs in,
+     * this method will update the UI to now go to the MainNavigationActivity and display a
+     * successful sign in message.
+     *
+     * @param account the current FirebaseUser's information
+     */
     public void updateUI(FirebaseUser account){
 
         if(account != null){

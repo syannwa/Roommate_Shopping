@@ -25,6 +25,9 @@ import com.google.firebase.auth.MultiFactorResolver;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+/**
+ * Handles the implementation of our register function.
+ */
 public class RegisterActivity extends AppCompatActivity {
 
     public static final String TAG = "Sign in Activity";
@@ -39,9 +42,11 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText roomNumber;
     private FirebaseDatabase database;
 
-    //private ActivityEmailpasswordBinding mBinding;
-
-
+    /**
+     * Sets buttons and views to appropriate values. Sets onClickListener for register button
+     *
+     * @param savedInstanceState the bundled saved state of the application
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,14 +65,21 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
     }
 
+    /**
+     * Registers a user using the information they gave us in the app
+     */
     private class ButtonClickListener implements View.OnClickListener {
 
+        /**
+         * When clicked, registers a user
+         *
+         * @param v the button view that has called the method
+         */
         @Override
         public void onClick(View v) {
+            //gets values from information entered
             String firstName = firstNameText.getText().toString();
             String lastName = lastNameText.getText().toString();
             String email = emailText.getText().toString();
@@ -86,27 +98,13 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-//    /*
-//     * This class defines all variables of the user that will be added to the database
-//     */
-//    public class User {
-//        public String firstName;
-//        public String lastName;
-//        public String email;
-//        public String room;
-//
-//        // Default constructor required for calls to DataSnapshot
-//        public User() {
-//        }
-//
-//        public User(String firstName, String lastName, String email, String room) {
-//            this.firstName = firstName;
-//            this.lastName = lastName;
-//            this.email = email;
-//            this.room = room;
-//        }
-//    }
-
+    /**
+     *
+     *
+     * @param email the email address the user has provided for this registration
+     * @param password the password the user has provided for this registration
+     * @param curUser the current user's FirebaseUser information
+     */
     private void createAccount(String email, String password, User curUser) {
         Log.d(TAG, "createAccount: " + email);
 
@@ -191,6 +189,13 @@ public class RegisterActivity extends AppCompatActivity {
         // [END create_user_with_email]
     }
 
+    /**
+     * This is called on a successful registration. When someone registers,
+     * this method will update the UI to now go to the MainNavigationActivity and display a
+     * successful registration message.
+     *
+     * @param account the current FirebaseUser's information
+     */
     public void updateUI(FirebaseUser account){
 
         if(account != null){

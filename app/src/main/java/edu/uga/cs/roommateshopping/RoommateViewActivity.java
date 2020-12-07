@@ -18,7 +18,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-
+/**
+ * Handles the functions for the roommates list in our app.
+ */
 public class RoommateViewActivity extends AppCompatActivity {
     private static final String TAG = "RoommateViewActivity";
 
@@ -31,7 +33,13 @@ public class RoommateViewActivity extends AppCompatActivity {
     private TextView title;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
-
+    /**
+     * on create, sets the values for the different views and then
+     * makes the addValueEventListener that will display the data in
+     * our roommates list.
+     *
+     * @param savedInstanceState the bundled saved state of the application
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +56,21 @@ public class RoommateViewActivity extends AppCompatActivity {
 
         myRef.addValueEventListener(new ValueEventListener() {
 
+            /**
+             * Shows the room and roommate data for the current user
+             *
+             * @param snapshot a snapshot of our current database
+             */
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 showData(snapshot);
             }
 
+            /**
+             * On a read failed or cancelled, this throws us an error
+             *
+             * @param error the error our database throws
+             */
             @Override
             public void onCancelled(DatabaseError error) {
 
@@ -62,12 +80,20 @@ public class RoommateViewActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Gets the current room number from database and sets it to display.
+     * From that room number, also grabs the rest of the roommates in that
+     * same room number and displays them to the user
+     *
+     * @param dataSnapshot a snapshot of our current database
+     */
     private void showData(DataSnapshot dataSnapshot)
     {
         ArrayList<String> array = new ArrayList<>();
         DataSnapshot rooms = null;
         String realCurrentRoom = "0";
 
+        //gets the current room number
         for(DataSnapshot ds : dataSnapshot.getChildren()) {
             User uInfo = new User();
             Log.d(TAG, "getRoommateData from database.");
@@ -83,6 +109,7 @@ public class RoommateViewActivity extends AppCompatActivity {
 
         }
 
+        //gets every name of every roommate in the current room number
         for(DataSnapshot ds : rooms.child(realCurrentRoom).child("roommates").getChildren()){
             array.add(ds.getKey());
         }

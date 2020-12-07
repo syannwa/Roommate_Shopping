@@ -27,6 +27,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+/**
+ * Handles the functions for the purchased items list in our app.
+ */
 public class PurchasedList extends AppCompatActivity {
 
     public static final String DEBUG_TAG = "PurchasedList_DEBUG";
@@ -47,6 +50,14 @@ public class PurchasedList extends AppCompatActivity {
     private ArrayList<Item> itemsList;
     String name = "";
 
+    /**
+     * On create, gets current user's list of items they have decided to move into their
+     * purchase list. If an item is un-purchased, it gets moved back to the group shopping list.
+     * If we decide to settle the cost of our purchases, the payment information will be
+     * sent to all of the other roommates in that room.
+     *
+     * @param savedInstanceState the bundled saved state of the application
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +84,13 @@ public class PurchasedList extends AppCompatActivity {
         // Get purchased items list from user
         myRef.addListenerForSingleValueEvent( new ValueEventListener() {
 
+            /**
+             * Goes through the database snapshot and picks out all of the items
+             * that this user has moved to their purchased items list to display.
+             * If nothing is there for a user, it just will not display anything.
+             *
+             * @param snapshot a snapshot of our current database
+             */
             @Override
             public void onDataChange( DataSnapshot snapshot ) {
                 // Once we have a DataSnapshot object, knowing that this is a list,
@@ -119,6 +137,11 @@ public class PurchasedList extends AppCompatActivity {
                 }
             }
 
+            /**
+             * On a read failed or cancelled, this throws us an error
+             *
+             * @param databaseError the error our database throws
+             */
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("The read failed: " + databaseError.getMessage());
@@ -132,6 +155,13 @@ public class PurchasedList extends AppCompatActivity {
                 popupMenu.getMenuInflater().inflate(R.menu.purchased_menu, popupMenu.getMenu());
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    /**
+                     * if the un-purchase menu option is clicked, we need to remove that item
+                     * in the purchased list back into the group shopping list
+                     *
+                     * @param item the item we have decided to take off the purchased list
+                     * @return
+                     */
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
 
@@ -167,6 +197,11 @@ public class PurchasedList extends AppCompatActivity {
 
     }
 
+    /**
+     * Determines the total price of all items in our list
+     *
+     * @param itemsList our list of current items in our purchased list
+     */
     private void calculateTotal(ArrayList<Item> itemsList) {
         for(Item item : itemsList) {
             total += item.getPrice();
@@ -174,16 +209,34 @@ public class PurchasedList extends AppCompatActivity {
         totalText.setText("" + total);
     }
 
+    /**
+     * If settle cost is selected, settles the cost per roommate and sends it out to the
+     * other users in the same room number.
+     */
     private class SettleCostClickListener implements View.OnClickListener {
+        /**
+         * When clicked, settles the cost per roommate and sends the information
+         * to every other roommate.
+         *
+         * @param v the button view that has called the method
+         */
         @Override
         public void onClick(View v) {
 
             Log.d(DEBUG_TAG, "Num Roommates: " + numRoommates);
+            //cost per roommate in the same room number as the current user
             Double individualCost = total / numRoommates;
             Log.d(DEBUG_TAG, "Indiv Cost: " + individualCost);
 
             myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
+                        /**
+                         * Goes through and gets the name of the current user and then
+                         * sends out to the rest of the roommates the person who they owe money to
+                         * and the payment amount
+                         *
+                         * @param snapshot a snapshot of our current database
+                         */
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             ArrayList<String> array = new ArrayList<>();
 
@@ -229,6 +282,11 @@ public class PurchasedList extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
 
                         }
+                        /**
+                         * On a read failed or cancelled, this throws us an error
+                        *
+                        * @param databaseError the error our database throws
+                        */
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
                         }
